@@ -1,4 +1,4 @@
-name: Microservices CI Pipeline
+name: Microservices CI/CD Pipeline
 
 on:
   push:
@@ -6,20 +6,40 @@ on:
       - main
 
 jobs:
-  build-user-service:
+  build-and-push-user-service:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build User Service Docker image
-        run: docker build -t user-service ./user-service
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  build-task-service:
+      - name: Build and push user-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./user-service
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
+
+  build-and-push-task-service:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Task Service Docker image
-        run: docker build -t task-service ./task-service
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push task-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./task-service
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/task-service:latest
