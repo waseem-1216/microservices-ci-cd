@@ -1,0 +1,25 @@
+name: Microservices CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-user-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build User Service Docker image
+        run: docker build -t user-service ./user-service
+
+  build-task-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Task Service Docker image
+        run: docker build -t task-service ./task-service
