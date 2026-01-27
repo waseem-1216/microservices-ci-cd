@@ -1,14 +1,45 @@
-version: "3.9"
+name: Microservices CI/CD Pipeline
 
-services:
-  user-service:
-    build: ./user-service
-    ports:
-      - "5001:5001"
-    container_name: user-service
+on:
+  push:
+    branches:
+      - main
 
-  task-service:
-    build: ./task-service
-    ports:
-      - "5002:5002"
-    container_name: task-service
+jobs:
+  build-and-push-user-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push user-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./user-service
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
+
+  build-and-push-task-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push task-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./task-service
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/task-service:latest
