@@ -9,6 +9,9 @@ def health():
 @app.route("/tasks")
 def tasks():
     return jsonify(["Learn Docker", "Learn CI/CD"])
+@app.route("/")
+def root():
+    return "Task Service is running"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002)
